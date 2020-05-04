@@ -4,10 +4,17 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var connected_num = 0
 
+//Explore files and load dynamically
+//localhost:3000/explorer/?file=index.html
+app.get('/explorer/', function(req, res){
+   // console.log(req.query.file)
+   res.sendfile(req.query.file);
+ });
 
+//Assets are icnluded in binary
 app.get('/', function (req, res) {
-   // res.sendfile('capture.html');
-   res.sendFile('index.html', { root: __dirname });
+   // res.sendfile('index.html');//Dynamic load
+   res.sendFile('index.html', { root: __dirname });//Package in file
 });
 
 app.get('/capture', function (req, res) {
@@ -27,12 +34,12 @@ app.get('/view.js', function (req, res) {
    res.sendFile('view.js', { root: __dirname });
 });
 app.get('/audio/1.wav', function (req, res) {
-   // res.sendfile('audio/1.wav');
-   res.sendFile('audio/1.wav', { root: __dirname });
+   res.sendfile('audio/1.wav');
+   // res.sendFile('audio/1.wav', { root: __dirname });
 });
 app.get('/audio/2.wav', function (req, res) {
-   // res.sendfile('audio/2.wav');
-   res.sendFile('audio/2.wav', { root: __dirname });
+   res.sendfile('audio/2.wav');
+   // res.sendFile('audio/2.wav', { root: __dirname });
 });
 
 
