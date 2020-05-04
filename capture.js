@@ -7,8 +7,7 @@ socket.on('testerEvent', function (data) {
     document.write(data.description)
 });
 
-socket.emit('clientEvent', 'Sent an event from the client!');
-
+socket.emit('clientEvent', 'Sent an event from the capture client!');
 
 
 // AR
@@ -31,7 +30,7 @@ AFRAME.registerComponent('registerevents', {
             console.log('markerFound', markerId);
             // TODO: Add your own code here to react to the marker being found.
             if (markerId == 'marker-hiro') { sound1.pause(); }
-            if (markerId == 'marker-kanji') { sound2.pause();}
+            if (markerId == 'marker-kanji') { sound2.pause(); }
             // Start interval loop
             var i = 0;
             var amount = 0
@@ -47,10 +46,17 @@ AFRAME.registerComponent('registerevents', {
                     amount = 0.2
                 }
 
-                console.log(amount)
+
+
+                // console.log(amount)
                 changeAudio(sound1, amount, amount, amount)
-                if (markerId == 'marker-hiro') { sound1.play(); }
-                if (markerId == 'marker-kanji') { sound2.play();}
+                if (markerId == 'marker-hiro') { 
+                    sound1.play(); 
+                    socket.emit('hiroRec', JSON.stringify([position, rotation]));}
+                if (markerId == 'marker-kanji') {
+                    sound2.play();
+                    socket.emit('kanjiRec', JSON.stringify([position, rotation]));
+                }
             }, 500);
 
         });
@@ -61,7 +67,7 @@ AFRAME.registerComponent('registerevents', {
             // TODO: Add your own code here to react to the marker being lost.
             // sound1.stop();
             if (markerId == 'marker-hiro') { sound1.pause(); }
-            if (markerId == 'marker-kanji') { sound2.pause();}
+            if (markerId == 'marker-kanji') { sound2.pause(); }
             clearInterval(interval);
         });
     }

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Hello world</title>
+    <title>Menu</title>
 </head>
 <script src="/socket.io/socket.io.js"></script>
 
@@ -16,6 +16,10 @@
     socket.emit('clientEvent', 'Sent an event from the client!');
 </script>
 
-<body>Hello world</body>
+<body>
+
+<a href="http://localhost:3000/capture" target="_blank">Capture</a>
+<a href="http://localhost:3000/view" target="_blank">View</a>
+</body>
 
 </html>

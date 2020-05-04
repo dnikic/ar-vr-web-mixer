@@ -7,24 +7,32 @@ var connected_num = 0
 
 app.get('/', function (req, res) {
    // res.sendfile('capture.html');
-   res.sendFile('index.html', {root: __dirname});
+   res.sendFile('index.html', { root: __dirname });
 });
 
 app.get('/capture', function (req, res) {
    // res.sendfile('capture.html');
-   res.sendFile('capture.html', {root: __dirname});
+   res.sendFile('capture.html', { root: __dirname });
 });
 app.get('/capture.js', function (req, res) {
    // res.sendfile('capture.js');
-   res.sendFile('capture.js', {root: __dirname});
+   res.sendFile('capture.js', { root: __dirname });
+});
+app.get('/view', function (req, res) {
+   // res.sendfile('view.html');
+   res.sendFile('view.html', { root: __dirname });
+});
+app.get('/view.js', function (req, res) {
+   // res.sendfile('view.js');
+   res.sendFile('view.js', { root: __dirname });
 });
 app.get('/audio/1.wav', function (req, res) {
    // res.sendfile('audio/1.wav');
-   res.sendFile('audio/1.wav', {root: __dirname});
+   res.sendFile('audio/1.wav', { root: __dirname });
 });
 app.get('/audio/2.wav', function (req, res) {
    // res.sendfile('audio/2.wav');
-   res.sendFile('audio/2.wav', {root: __dirname});
+   res.sendFile('audio/2.wav', { root: __dirname });
 });
 
 
@@ -43,13 +51,28 @@ io.on('connection', function (socket) {
       console.log(data);
    });
 
+
+
+   socket.on('kanjiRec', function (data) {
+      // console.log(JSON.parse(data));
+      io.emit('kanjiServe', data);
+
+   });
+
+   socket.on('hiroRec', function (data) {
+      // console.log(JSON.parse(data));
+      io.emit('hiroServe', data);
+   });
+
+
+
    socket.on('disconnect', function () {
       console.log('A user disconnected');
       // Shutdown server if no connected clients
       connected_num = connected_num - 1
-      if (connected_num == 0) {   
-         http.close()   
-         io.close()   
+      if (connected_num == 0) {
+         http.close()
+         io.close()
          process.exit();
       }
    });
@@ -65,13 +88,13 @@ http.listen(3000, function () {
 // Start Firefox
 try {
    const { exec } = require("child_process");
-   exec("firefox -new-tab 'localhost:3000/capture'", (error, stdout, stderr) => {
+   exec("firefox -new-tab 'localhost:3000/'", (error, stdout, stderr) => {
       if (error) {
          console.log(`error: ${error.message}`);
          return;
       }
    });
-   exec("start firefox -new-tab localhost:3000/capture", (error, stdout, stderr) => {
+   exec("start firefox -new-tab localhost:3000/", (error, stdout, stderr) => {
       if (error) {
          console.log(`error: ${error.message}`);
          return;
