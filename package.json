@@ -11,7 +11,9 @@
       "capture.js",
       "view.html",
       "view.js",
-      "audio"
+      "audio",
+      "lib",
+      "data"
     ]
   },
   "scripts": {

@@ -16,7 +16,6 @@ app.get('/', function (req, res) {
    // res.sendfile('index.html');//Dynamic load
    res.sendFile('index.html', { root: __dirname });//Package in file
 });
-
 app.get('/capture', function (req, res) {
    // res.sendfile('capture.html');
    res.sendFile('capture.html', { root: __dirname });
@@ -42,8 +41,17 @@ app.get('/audio/2.wav', function (req, res) {
    // res.sendFile('audio/2.wav', { root: __dirname });
 });
 
+//Frontend dependencies
+app.get('/aframe-master.min.js', function (req, res) {res.sendFile('lib/aframe-master.min.js', { root: __dirname });});
+app.get('/aframe-ar.js', function (req, res) {res.sendFile('lib/aframe-ar.js', { root: __dirname });});
+app.get('/Pizzicato.min.js', function (req, res) {res.sendFile('lib/Pizzicato.min.js', { root: __dirname });});
+app.get('/aframe.min.js', function (req, res) {res.sendFile('lib/aframe.min.js', { root: __dirname });});
+app.get('/data/camera_para.dat', function (req, res) {res.sendFile('data/camera_para.dat', { root: __dirname });});
+app.get('/data/pattern-hiro.patt', function (req, res) {res.sendFile('data/pattern-hiro.patt', { root: __dirname });});
+app.get('/data/pattern-kanji.patt', function (req, res) {res.sendFile('data/pattern-kanji.patt', { root: __dirname });});
 
 
+//Socket events
 io.on('connection', function (socket) {
    console.log('A user connected');
    connected_num = connected_num + 1
