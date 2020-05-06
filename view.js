@@ -10,14 +10,25 @@
 
 var object1 = document.getElementById("object1");
 var object2 = document.getElementById("object2");
-object1.setAttribute('position', { x: -2, y: 1, z: -3 });
-object2.setAttribute('position', { x: 1, y: 1, z: -3 });
+// object1.setAttribute('position', { x: 0.5, y: 0.5, z: -2 });
+// object2.setAttribute('position', { x: 2, y: 1, z: -3 });
+// object2.setAttribute('rotation', { x: 1, y: 1, z: 1 });
+
+
 
 socket.on('kanjiServe', function (data) {
-    console.log(data)
-    // console.log(JSON.parse(data));
+    // console.log(data);
+    data = JSON.parse(data);
+    position = data[0];
+    rotation = data[1];
+    object1.setAttribute('position', position);
+    object1.setAttribute('rotation', rotation);
 });
 socket.on('hiroServe', function (data) {
-    console.log(data)
-    console.log(JSON.parse(data));
+    console.log(data);
+    data = JSON.parse(data);
+    position = data[0];
+    rotation = data[1];
+    object2.setAttribute('position', position);
+    object2.setAttribute('rotation', rotation);
 });

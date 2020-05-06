@@ -51,7 +51,7 @@ AFRAME.registerComponent('registerevents', {
                     sound2.play();
                     socket.emit('kanjiRec', JSON.stringify([position, rotation]));
                 }
-            }, 500);
+            }, 100);
 
         });
 
