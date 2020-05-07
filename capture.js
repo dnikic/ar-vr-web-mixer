@@ -37,19 +37,20 @@ AFRAME.registerComponent('registerevents', {
                 // console.log(i++);  // this is inside your loop
                 position = marker.getAttribute('position');
                 rotation = marker.getAttribute('rotation');
+                scale = marker.getAttribute('scale');
                 if (markerId == 'marker-hiro') {
                     sound1.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound1.effects[0].gain = Math.abs(position.x)
                     sound1.effects[1].mix = Math.abs(position.y)
                     sound1.play();
-                    socket.emit('hiroRec', JSON.stringify([position, rotation]));
+                    socket.emit('hiroRec', JSON.stringify([position, rotation,scale,sound1.volume]));
                 }
                 if (markerId == 'marker-kanji') {
                     sound2.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound2.effects[0].gain = Math.abs(position.x)
                     sound2.effects[1].mix = Math.abs(position.y)
                     sound2.play();
-                    socket.emit('kanjiRec', JSON.stringify([position, rotation]));
+                    socket.emit('kanjiRec', JSON.stringify([position, rotation,scale,sound2.volume]));
                 }
             }, 100);
 
