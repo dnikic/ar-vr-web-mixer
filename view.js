@@ -14,6 +14,7 @@ var object2 = document.getElementById("object2");
 // object2.setAttribute('position', { x: 2, y: 1, z: -3 });
 // object2.setAttribute('rotation', { x: 1, y: 1, z: 1 });
 // object2.setAttribute('scale', { x: 2, y: 0.5, z: 1 });
+// object2.setAttribute('color', "#f5428d");
 
 
 //data = [position,rotation,scale,volume]
@@ -29,6 +30,12 @@ socket.on('kanjiServe', function (data) {
     object1.setAttribute('position', position);
     object1.setAttribute('rotation', rotation);
     object1.setAttribute('scale', { x: scale, y: scale, z: scale });
+    if (Math.abs(position.x) > 0.8) {//same as distorsion gain value
+        object1.setAttribute('color', "#f5428d");
+    }
+    else {
+        object1.setAttribute('color', "#4CC3D9");//same as gain value
+    }
 });
 socket.on('hiroServe', function (data) {
     data = JSON.parse(data);
@@ -39,5 +46,11 @@ socket.on('hiroServe', function (data) {
     object2.setAttribute('position', position);
     object2.setAttribute('rotation', rotation);
     object2.setAttribute('scale', { x: scale, y: scale, z: scale });
+    if (Math.abs(position.y) > 0.8) {//same as reverb mix value
+        object2.setAttribute('color', "#f5428d");
+    }
+    else {
+        object2.setAttribute('color', "#FFC65D");//same as gain value
+    }
 
 });
