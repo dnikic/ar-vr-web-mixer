@@ -6,10 +6,10 @@ var connected_num = 0
 
 //Explore files and load dynamically
 //localhost:3000/explorer/?file=index.html
-app.get('/explorer/', function(req, res){
+app.get('/explorer/', function (req, res) {
    // console.log(req.query.file)
    res.sendfile(req.query.file);
- });
+});
 
 //Assets are icnluded in binary
 app.get('/', function (req, res) {
@@ -42,21 +42,31 @@ app.get('/audio/2.wav', function (req, res) {
 });
 
 //Frontend dependencies
-app.get('/aframe-master.min.js', function (req, res) {res.sendFile('lib/aframe-master.min.js', { root: __dirname });});
-app.get('/aframe-ar.js', function (req, res) {res.sendFile('lib/aframe-ar.js', { root: __dirname });});
-app.get('/Pizzicato.min.js', function (req, res) {res.sendFile('lib/Pizzicato.min.js', { root: __dirname });});
-app.get('/aframe.min.js', function (req, res) {res.sendFile('lib/aframe.min.js', { root: __dirname });});
-app.get('/data/camera_para.dat', function (req, res) {res.sendFile('data/camera_para.dat', { root: __dirname });});
+app.get('/aframe-master.min.js', function (req, res) { res.sendFile('lib/aframe-master.min.js', { root: __dirname }); });
+app.get('/aframe-ar.js', function (req, res) { res.sendFile('lib/aframe-ar.js', { root: __dirname }); });
+app.get('/Pizzicato.min.js', function (req, res) { res.sendFile('lib/Pizzicato.min.js', { root: __dirname }); });
+app.get('/aframe.min.js', function (req, res) { res.sendFile('lib/aframe.min.js', { root: __dirname }); });
+app.get('/data/camera_para.dat', function (req, res) { res.sendFile('data/camera_para.dat', { root: __dirname }); });
 //Pattern files
-app.get('/data/pattern-hiro.patt', function (req, res) {res.sendFile('data/pattern-hiro.patt', { root: __dirname });});
-app.get('/data/pattern-kanji.patt', function (req, res) {res.sendFile('data/pattern-kanji.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-A.patt', function (req, res) {res.sendFile('/data/patterns/pattern-A.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-B.patt', function (req, res) {res.sendFile('/data/patterns/pattern-B.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-C.patt', function (req, res) {res.sendFile('/data/patterns/pattern-C.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-D.patt', function (req, res) {res.sendFile('/data/patterns/pattern-D.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-E.patt', function (req, res) {res.sendFile('/data/patterns/pattern-E.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-F.patt', function (req, res) {res.sendFile('/data/patterns/pattern-F.patt', { root: __dirname });});
-app.get('/data/patterns/pattern-G.patt', function (req, res) {res.sendFile('/data/patterns/pattern-G.patt', { root: __dirname });});
+app.get('/data/pattern-hiro.patt', function (req, res) { res.sendFile('data/pattern-hiro.patt', { root: __dirname }); });
+app.get('/data/pattern-kanji.patt', function (req, res) { res.sendFile('data/pattern-kanji.patt', { root: __dirname }); });
+//Custom pattern files
+var custMarkerNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+for (i = 0; i <= custMarkerNames.length; i++) {
+   let patternUrl = '/data/patterns/pattern-' + custMarkerNames[i] + '.patt'
+   // console.log(patternUrl)
+   app.get(patternUrl, function (req, res) {
+      res.sendFile(patternUrl, { root: __dirname });
+   });
+};
+
+// app.get('/data/patterns/pattern-A.patt', function (req, res) {res.sendFile('/data/patterns/pattern-A.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-B.patt', function (req, res) {res.sendFile('/data/patterns/pattern-B.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-C.patt', function (req, res) {res.sendFile('/data/patterns/pattern-C.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-D.patt', function (req, res) {res.sendFile('/data/patterns/pattern-D.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-E.patt', function (req, res) {res.sendFile('/data/patterns/pattern-E.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-F.patt', function (req, res) {res.sendFile('/data/patterns/pattern-F.patt', { root: __dirname });});
+// app.get('/data/patterns/pattern-G.patt', function (req, res) {res.sendFile('/data/patterns/pattern-G.patt', { root: __dirname });});
 
 
 
@@ -70,24 +80,29 @@ io.on('connection', function (socket) {
    //    //Sending an object when emmiting an event
    //    socket.emit('testerEvent', { description: 'A custom event named testerEvent!' });
    // }, 4000);
+   io.emit('custMarkerNamesServe', custMarkerNames);//Send a list of available markers
+   //Handle custom marker events
+   for (i = 0; i <= custMarkerNames.length; i++) {
+      socket.on(custMarkerNames[i] + 'Rec', function (data) {
+         // console.log(JSON.parse(data));
+         io.emit(custMarkerNames[i] + 'Serve', data);
+         // console.log(data);
+      });
+   };
+
 
    socket.on('clientEvent', function (data) {
       console.log(data);
    });
 
-
-
    socket.on('kanjiRec', function (data) {
       // console.log(JSON.parse(data));
       io.emit('kanjiServe', data);
-
    });
-
    socket.on('hiroRec', function (data) {
       // console.log(JSON.parse(data));
       io.emit('hiroServe', data);
    });
-
 
 
    socket.on('disconnect', function () {

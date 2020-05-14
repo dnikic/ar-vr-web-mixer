@@ -18,6 +18,11 @@ var object2 = document.getElementById("object2");
 
 
 //data = [position,rotation,scale,volume]
+var custMarkerNames = []
+socket.on('custMarkerNamesServe', function (data) {
+    custMarkerNames = data
+    console.log(custMarkerNames);
+});
 
 socket.on('kanjiServe', function (data) {
     // console.log(data);
@@ -54,3 +59,28 @@ socket.on('hiroServe', function (data) {
     }
 
 });
+
+for (i = 0; i <= custMarkerNames.length; i++) {
+socket.on(custMarkerNames[i] + 'Serve', function (data) {
+        data = JSON.parse(data);
+        position = data[0];
+        rotation = data[1];
+        // scale = data[2];//Actuaal scale
+        scale = data[3];//Sound volume
+        console.log(position)
+
+        // Adds an element to the document
+        // var p = document.getElementById(parentId);
+        var p = document.getElementsByTagName('a-scene')[0];
+        var newElement = document.createElement('a-box');
+        newElement.setAttribute('id', custMarkerNames[i]);
+        newElement.innerHTML = '';
+        p.appendChild(newElement);
+        var customMarkerObj = document.getElementById(custMarkerNames[i]);
+        customMarkerObj.setAttribute('position', position);
+        customMarkerObj.setAttribute('rotation', rotation);
+        customMarkerObj.setAttribute('scale', { x: scale, y: scale, z: scale });
+        customMarkerObj.setAttribute('color', "#f54242");
+        
+    });
+}
