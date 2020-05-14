@@ -52,9 +52,9 @@ app.get('/data/pattern-hiro.patt', function (req, res) { res.sendFile('data/patt
 app.get('/data/pattern-kanji.patt', function (req, res) { res.sendFile('data/pattern-kanji.patt', { root: __dirname }); });
 //Custom pattern files
 var custMarkerNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-for (i = 0; i <= custMarkerNames.length; i++) {
+for (i = 0; i < custMarkerNames.length; i++) {
    let patternUrl = '/data/patterns/pattern-' + custMarkerNames[i] + '.patt'
-   // console.log(patternUrl)
+   console.log(patternUrl)
    app.get(patternUrl, function (req, res) {
       res.sendFile(patternUrl, { root: __dirname });
    });
@@ -82,13 +82,14 @@ io.on('connection', function (socket) {
    // }, 4000);
    io.emit('custMarkerNamesServe', custMarkerNames);//Send a list of available markers
    //Handle custom marker events
-   for (i = 0; i <= custMarkerNames.length; i++) {
-      socket.on(custMarkerNames[i] + 'Rec', function (data) {
-         // console.log(JSON.parse(data));
-         io.emit(custMarkerNames[i] + 'Serve', data);
-         // console.log(data);
-      });
-   };
+   socket.on('custMarkerRec', function (data) {
+      // console.log(i);
+      // console.log(JSON.parse(data));
+      io.emit('custMarkerServe', data);
+      // console.log(data);
+   });
+
+
 
 
    socket.on('clientEvent', function (data) {

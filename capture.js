@@ -7,40 +7,8 @@ socket.on('testerEvent', function (data) {
     document.write(data.description)
 });
 var custMarkerNames = []
-socket.on('custMarkerNamesServe', function (data) {
-    custMarkerNames = data
-    console.log(custMarkerNames);
-});
 
 socket.emit('clientEvent', 'Sent an event from the capture client!');
-
-
-
-//Generate page objects
-
-
-
-console.log(document.innerHTML)
-// for (i = 0; i <= custMarkerNames.length; i++) {
-//     //Generate marker object
-//     var newElement = document.createElement('a-marker');
-//     newElement.setAttribute('id', 'marker-' + custMarkerNames[i]);
-//     newElement.innerHTML = '';
-//     document.getElementsByTagName('a-scene')[0].appendChild(newElement);
-//     var customMarkerObj = document.getElementById('marker-' + custMarkerNames[i]);
-//     customMarkerObj.setAttribute('preset', 'custom');
-//     customMarkerObj.setAttribute('type', 'pattern');
-//     customMarkerObj.setAttribute('url', '/data/patterns/pattern-' + custMarkerNames[i] + '.patt');
-//     customMarkerObj.createAttribute('registerevents');
-//     //Generate box within
-//     newElement = document.createElement('a-box');
-//     newElement.setAttribute('position', '0 0.5 0');
-//     newElement.setAttribute('material', 'opacity: 0.5; side: double;color:green;');
-//     customMarkerObj.appendChild(newElement);
-// }
-
-
-
 
 
 
@@ -74,11 +42,8 @@ AFRAME.registerComponent('registerevents', {
                 position = marker.getAttribute('position');
                 rotation = marker.getAttribute('rotation');
                 scale = marker.getAttribute('scale');
-                for (i = 0; i <= custMarkerNames.length; i++) {
-                    if (markerId == 'marker-' + custMarkerNames[i]) {
-                        socket.emit(custMarkerNames[i] + 'Rec', JSON.stringify([position, rotation, scale, sound1.volume]));
-                    };
-                };
+                socket.emit('custMarkerRec', JSON.stringify([markerId, position, rotation, scale, sound1.volume]));
+
 
                 if (markerId == 'marker-hiro') {
                     sound1.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
@@ -143,4 +108,55 @@ function prepSound(sound) {
 
 
 
+//Generate page objects
+document.body.innerHTML = '\
+<a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;">\
+<a-marker preset="hiro" id="marker-hiro" registerevents>\
+    <a-box position="0 0.5 0" material="opacity: 0.5; side: double;color:blue;">\
+        <a-torus-knot radius="0.26" radius-tubular="0.05"\
+            animation="property: rotation; to:360 0 0; dur: 5000; easing: linear; loop: true">\
+        </a-torus-knot>\
+    </a-box>\
+</a-marker>\
+<a-marker preset="kanji" id="marker-kanji" registerevents>\
+    <a-box position="0 0.5 0" material="opacity: 0.5; side: double;color:red;">\
+        <a-torus-knot radius="0.26" radius-tubular="0.05"\
+            animation="property: rotation; to:360 0 0; dur: 5000; easing: linear; loop: true">\
+        </a-torus-knot>\
+    </a-box>\
+</a-marker>\
+<!-- add a simple camera -->\
+<a-entity camera></a-entity></a-scene>'
+
+socket.on('custMarkerNamesServe', function (data) {
+    custMarkerNames = data
+    console.log(custMarkerNames);
+
+
+
+
+    for (i = 0; i < custMarkerNames.length; i++) {
+        var elem = document.getElementById('marker-' + custMarkerNames[i]);
+        if (elem == null) {
+            //Generate marker object
+            var p = document.getElementsByTagName('a-scene')[0];
+            var newElement = document.createElement('a-marker');
+            newElement.setAttribute('id', 'marker-' + custMarkerNames[i]);
+            newElement.innerHTML = '';
+            p.appendChild(newElement);
+            var customMarkerObj = document.getElementById('marker-' + custMarkerNames[i]);
+            customMarkerObj.setAttribute('preset', 'custom');
+            customMarkerObj.setAttribute('type', 'pattern');
+            customMarkerObj.setAttribute('url', '/data/patterns/pattern-' + custMarkerNames[i] + '.patt');
+            customMarkerObj.setAttribute('registerevents', '');
+            // att = document.createAttribute('registerevents');
+            // customMarkerObj.setAttributeNode(att);  
+            //Generate box within
+            newElement = document.createElement('a-box');
+            newElement.setAttribute('position', '0 0.5 0');
+            newElement.setAttribute('material', 'opacity: 0.5; side: double;color:green;');
+            customMarkerObj.appendChild(newElement);
+        }
+    }
+});
 
