@@ -32,14 +32,20 @@ app.get('/view.js', function (req, res) {
    res.sendfile('view.js');
    // res.sendFile('view.js', { root: __dirname });
 });
-app.get('/audio/1.wav', function (req, res) {
-   res.sendfile('audio/1.wav');
-   // res.sendFile('audio/1.wav', { root: __dirname });
-});
-app.get('/audio/2.wav', function (req, res) {
-   res.sendfile('audio/2.wav');
-   // res.sendFile('audio/2.wav', { root: __dirname });
-});
+
+//Loading audio
+var audioNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+for (i = 0; i < audioNames.length; i++) {
+   let soundUrl = 'audio/' + audioNames[i] + '.wav';
+   // console.log( soundUrl);
+   app.get('/' + soundUrl, function (req, res) {
+      // app.get('/audio/A.wav', function (req, res) {
+      res.sendfile( soundUrl);
+      // res.sendFile(soundUrl, { root: __dirname });
+      // res.sendFile('audio/1.wav', { root: __dirname });
+   });
+};
+
 
 //Frontend dependencies
 app.get('/aframe-master.min.js', function (req, res) { res.sendFile('lib/aframe-master.min.js', { root: __dirname }); });
@@ -47,27 +53,19 @@ app.get('/aframe-ar.js', function (req, res) { res.sendFile('lib/aframe-ar.js', 
 app.get('/Pizzicato.min.js', function (req, res) { res.sendFile('lib/Pizzicato.min.js', { root: __dirname }); });
 app.get('/aframe.min.js', function (req, res) { res.sendFile('lib/aframe.min.js', { root: __dirname }); });
 app.get('/data/camera_para.dat', function (req, res) { res.sendFile('data/camera_para.dat', { root: __dirname }); });
+app.get('/aueffetcs.js', function (req, res) { res.sendFile('lib/aueffetcs.js', { root: __dirname }); });
+
+
 //Pattern files
-app.get('/data/pattern-hiro.patt', function (req, res) { res.sendFile('data/pattern-hiro.patt', { root: __dirname }); });
-app.get('/data/pattern-kanji.patt', function (req, res) { res.sendFile('data/pattern-kanji.patt', { root: __dirname }); });
 //Custom pattern files
 var custMarkerNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 for (i = 0; i < custMarkerNames.length; i++) {
    let patternUrl = '/data/patterns/pattern-' + custMarkerNames[i] + '.patt'
-   console.log(patternUrl)
+   // console.log(patternUrl)
    app.get(patternUrl, function (req, res) {
       res.sendFile(patternUrl, { root: __dirname });
    });
 };
-
-// app.get('/data/patterns/pattern-A.patt', function (req, res) {res.sendFile('/data/patterns/pattern-A.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-B.patt', function (req, res) {res.sendFile('/data/patterns/pattern-B.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-C.patt', function (req, res) {res.sendFile('/data/patterns/pattern-C.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-D.patt', function (req, res) {res.sendFile('/data/patterns/pattern-D.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-E.patt', function (req, res) {res.sendFile('/data/patterns/pattern-E.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-F.patt', function (req, res) {res.sendFile('/data/patterns/pattern-F.patt', { root: __dirname });});
-// app.get('/data/patterns/pattern-G.patt', function (req, res) {res.sendFile('/data/patterns/pattern-G.patt', { root: __dirname });});
-
 
 
 //Socket events
@@ -75,34 +73,11 @@ io.on('connection', function (socket) {
    console.log('A user connected');
    connected_num = connected_num + 1
 
-   //Send a message when 
-   // setTimeout(function () {
-   //    //Sending an object when emmiting an event
-   //    socket.emit('testerEvent', { description: 'A custom event named testerEvent!' });
-   // }, 4000);
-   io.emit('custMarkerNamesServe', custMarkerNames);//Send a list of available markers
-   //Handle custom marker events
+
+   io.emit('custMarkerNamesServe', custMarkerNames);//Send a list of available markers to capture & view
+   //Transfer marker data from Capture to view
    socket.on('custMarkerRec', function (data) {
-      // console.log(i);
-      // console.log(JSON.parse(data));
       io.emit('custMarkerServe', data);
-      // console.log(data);
-   });
-
-
-
-
-   socket.on('clientEvent', function (data) {
-      console.log(data);
-   });
-
-   socket.on('kanjiRec', function (data) {
-      // console.log(JSON.parse(data));
-      io.emit('kanjiServe', data);
-   });
-   socket.on('hiroRec', function (data) {
-      // console.log(JSON.parse(data));
-      io.emit('hiroServe', data);
    });
 
 
@@ -119,6 +94,7 @@ io.on('connection', function (socket) {
 
 });
 
+//Express server
 http.listen(3000, function () {
    console.log('listening on localhost:3000');
 });

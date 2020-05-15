@@ -2,14 +2,7 @@
 
 //Sockets
 var socket = io();
-socket.on('testerEvent', function (data) {
-    console.log(data.description);
-    document.write(data.description)
-});
 var custMarkerNames = []
-
-socket.emit('clientEvent', 'Sent an event from the capture client!');
-
 
 
 
@@ -22,9 +15,8 @@ window.addEventListener('camera-error', (error) => {
     console.log('camera-error', error);
 })
 
-
+//Event upon marker being registrated
 AFRAME.registerComponent('registerevents', {
-
     init: function () {
         var marker = this.el;
         var interval;
@@ -32,77 +24,88 @@ AFRAME.registerComponent('registerevents', {
         marker.addEventListener('markerFound', function () {
             var markerId = marker.id;
             console.log('markerFound', markerId);
-            // TODO: Add your own code here to react to the marker being found.
-            if (markerId == 'marker-hiro') { sound1.pause(); }
-            if (markerId == 'marker-kanji') { sound2.pause(); }
             // Start marker interval loop --------------------------------------------------------------------->
             var i = 0;
             interval = setInterval(function () {
-                // console.log(i++);  // this is inside your loop
+                //Send marker data to view
                 position = marker.getAttribute('position');
                 rotation = marker.getAttribute('rotation');
                 scale = marker.getAttribute('scale');
                 socket.emit('custMarkerRec', JSON.stringify([markerId, position, rotation, scale, sound1.volume]));
-
-
-                if (markerId == 'marker-hiro') {
+                //Manipulate sound
+                if (markerId == 'marker-A') {
+                    sound1.pause();
                     sound1.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound1.effects[0].gain = Math.abs(position.x)
                     sound1.effects[1].mix = Math.abs(position.y)
                     sound1.play();
-                    socket.emit('hiroRec', JSON.stringify([position, rotation, scale, sound1.volume]));
                 }
-                if (markerId == 'marker-kanji') {
+                if (markerId == 'marker-B') {
+                    sound2.pause();
                     sound2.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound2.effects[0].gain = Math.abs(position.x)
                     sound2.effects[1].mix = Math.abs(position.y)
                     sound2.play();
-                    socket.emit('kanjiRec', JSON.stringify([position, rotation, scale, sound2.volume]));
+                }
+                if (markerId == 'marker-C') {
+                    sound3.pause();
+                    // sound3.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
+                    sound3.volume = Math.abs(position.x)   
+                    sound3.effects[0].mix = Math.abs(position.y)
+                    sound3.play();
                 }
             }, 100);
 
         });
-
+        //If marker lost
         marker.addEventListener('markerLost', function () {
             var markerId = marker.id;
             console.log('markerLost', markerId);
-            if (markerId == 'marker-hiro') { sound1.pause(); }
-            if (markerId == 'marker-kanji') { sound2.pause(); }
+            if (markerId == 'marker-A') { sound1.pause(); }
+            if (markerId == 'marker-B') { sound2.pause(); }
+            if (markerId == 'marker-C') { sound3.pause(); }
             clearInterval(interval);
         });
     }
 });
 
-// Audio loading
+// Audio loading and adding effects
 var sound1 = new Pizzicato.Sound(
     {
         source: 'file',
-        options: { path: './audio/1.wav', loop: true }
+        options: { path: './audio/A.wav', loop: true }
     },
-    function () { prepSound(sound1) }
+    function () {
+        sound1.addEffect(distortion);
+        sound1.addEffect(reverb);
+        sound1.volume = 1;
+    }
 );
 var sound2 = new Pizzicato.Sound(
     {
         source: 'file',
-        options: { path: './audio/2.wav', loop: true }
+        options: { path: './audio/B.wav', loop: true }
     },
-    function () { prepSound(sound2); }
+    function () {
+        sound2.addEffect(distortion);
+        sound2.addEffect(reverb);
+        sound2.addEffect(tremolo);
+        sound2.volume = 1;
+    }
 );
-function prepSound(sound) {
-    var distortion = new Pizzicato.Effects.Distortion({
-        gain: 0 //min 0.0, max 1.0
-    });
-    var reverb = new Pizzicato.Effects.Reverb({
-        time: 0.90,
-        decay: 0.03,
-        reverse: false,
-        mix: 0 //max 0.71, min 0.00
-    });
-    sound.addEffect(distortion);
-    sound.addEffect(reverb);
-    sound.volume = 1;
-    console.log('Sound loaded');
-}
+
+var sound3 = new Pizzicato.Sound(
+    {
+        source: 'file',
+        options: { path: './audio/C.wav', loop: true }
+    },
+    function () {
+        sound3.addEffect(tremolo);
+        sound3.volume = 1;
+    }
+);
+
+
 
 
 
@@ -111,30 +114,13 @@ function prepSound(sound) {
 //Generate page objects
 document.body.innerHTML = '\
 <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960;">\
-<a-marker preset="hiro" id="marker-hiro" registerevents>\
-    <a-box position="0 0.5 0" material="opacity: 0.5; side: double;color:blue;">\
-        <a-torus-knot radius="0.26" radius-tubular="0.05"\
-            animation="property: rotation; to:360 0 0; dur: 5000; easing: linear; loop: true">\
-        </a-torus-knot>\
-    </a-box>\
-</a-marker>\
-<a-marker preset="kanji" id="marker-kanji" registerevents>\
-    <a-box position="0 0.5 0" material="opacity: 0.5; side: double;color:red;">\
-        <a-torus-knot radius="0.26" radius-tubular="0.05"\
-            animation="property: rotation; to:360 0 0; dur: 5000; easing: linear; loop: true">\
-        </a-torus-knot>\
-    </a-box>\
-</a-marker>\
 <!-- add a simple camera -->\
-<a-entity camera></a-entity></a-scene>'
-
+<a-entity camera></a-entity></a-scene>\
+'
+//Get all avaliable markers from backend and make DOM elements
 socket.on('custMarkerNamesServe', function (data) {
     custMarkerNames = data
     console.log(custMarkerNames);
-
-
-
-
     for (i = 0; i < custMarkerNames.length; i++) {
         var elem = document.getElementById('marker-' + custMarkerNames[i]);
         if (elem == null) {
