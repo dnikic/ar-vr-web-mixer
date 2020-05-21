@@ -33,7 +33,7 @@ var object2 = document.getElementById("object2");
 var custMarkerNames = []
 socket.on('custMarkerNamesServe', function (data) {
     custMarkerNames = data
-    console.log(custMarkerNames);
+    // console.log(custMarkerNames);
     for (i = 0; i < custMarkerNames.length; i++) {
         var elem = document.getElementById('marker-' + custMarkerNames[i]);
         if (elem == null) {
@@ -48,6 +48,16 @@ socket.on('custMarkerNamesServe', function (data) {
     }
 });
 
+socket.on('custMarkerLostServe', function (data) {
+    markerId = JSON.parse(data);
+    console.log(markerId)
+    var customMarkerObj = document.getElementById(markerId);
+    customMarkerObj.setAttribute('scale', { x: 0, y: 0, z: 0 });
+
+
+});
+
+
 //Do on marker data updated
 socket.on('custMarkerServe', function (data) {
     data = JSON.parse(data);
@@ -56,9 +66,10 @@ socket.on('custMarkerServe', function (data) {
     rotation = data[2];
     scale = data[3];//Actuaal scale
     vol = data[4];//Sound volume
-    console.log(markerId)
+    // console.log(markerId)
 
     if (markerId == 'marker-A') {
+
         object1.setAttribute('position', position);
         object1.setAttribute('rotation', rotation);
         object1.setAttribute('scale', { x: vol, y: vol, z: vol });

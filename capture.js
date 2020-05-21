@@ -64,6 +64,7 @@ AFRAME.registerComponent('registerevents', {
             if (markerId == 'marker-A') { sound1.pause(); }
             if (markerId == 'marker-B') { sound2.pause(); }
             if (markerId == 'marker-C') { sound3.pause(); }
+            socket.emit('custMarkerLost', JSON.stringify(markerId));
             clearInterval(interval);
         });
     }

@@ -79,6 +79,9 @@ io.on('connection', function (socket) {
    socket.on('custMarkerRec', function (data) {
       io.emit('custMarkerServe', data);
    });
+   socket.on('custMarkerLost', function (data) {
+      io.emit('custMarkerLostServe', data);
+   });
 
 
    socket.on('disconnect', function () {
