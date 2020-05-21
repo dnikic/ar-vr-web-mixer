@@ -34,24 +34,22 @@ AFRAME.registerComponent('registerevents', {
                 socket.emit('custMarkerRec', JSON.stringify([markerId, position, rotation, scale, sound1.volume]));
                 //Manipulate sound
                 if (markerId == 'marker-A') {
-                    sound1.pause();
                     sound1.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound1.effects[0].gain = Math.abs(position.x)
                     sound1.effects[1].mix = Math.abs(position.y)
                     sound1.play();
                 }
                 if (markerId == 'marker-B') {
-                    sound2.pause();
                     sound2.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound2.effects[0].gain = Math.abs(position.x)
                     sound2.effects[1].mix = Math.abs(position.y)
                     sound2.play();
                 }
                 if (markerId == 'marker-C') {
-                    sound3.pause();
                     // sound3.volume = -1 * (Math.abs(rotation.z) / 180) + 1 //Up is 1, down is 0    
                     sound3.volume = Math.abs(position.x)   
                     sound3.effects[0].mix = Math.abs(position.y)
+                    // sound3.effects[0].mix = 0
                     sound3.play();
                 }
             }, 100);
@@ -77,8 +75,8 @@ var sound1 = new Pizzicato.Sound(
         options: { path: './audio/A.wav', loop: true }
     },
     function () {
-        sound1.addEffect(distortion);
-        sound1.addEffect(reverb);
+        // sound1.addEffect(distortion);
+        // sound1.addEffect(reverb);
         sound1.volume = 1;
     }
 );
